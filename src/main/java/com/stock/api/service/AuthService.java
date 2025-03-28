@@ -5,7 +5,6 @@ import com.stock.api.dto.NaverUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -16,6 +15,7 @@ public class AuthService {
     private final RestClient restClient;
 
     public NaverUserDto fetchNaverUserInfo(String naverAccessToken) {
+        
         String url = "https://openapi.naver.com/v1/nid/me"; // 네이버 API URL
 
         // HTTP 요청 헤더 설정
