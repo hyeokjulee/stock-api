@@ -1,7 +1,7 @@
-package com.stock.api.config;
+package com.stock.api.security.config;
 
-import com.stock.api.jwt.JwtAuthenticationFilter;
-import com.stock.api.jwt.JwtUtil;
+import com.stock.api.security.service.JwtService;
+import com.stock.api.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
 
         // JWT 검증 필터 추가
-        http.addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
 
         //세션(상태 유지) 비활성화
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

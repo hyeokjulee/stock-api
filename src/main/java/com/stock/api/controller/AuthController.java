@@ -1,6 +1,6 @@
 package com.stock.api.controller;
 
-import com.stock.api.dto.JwtDto;
+import com.stock.api.security.dto.JwtDto;
 import com.stock.api.dto.NaverAccessTokenDto;
 import com.stock.api.service.AuthService;
 import lombok.RequiredArgsConstructor;
