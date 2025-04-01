@@ -14,7 +14,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@RequestBody NaverAccessTokenDto naverAccessToken) {
         String accessToken = naverAccessToken.getAccessToken();
