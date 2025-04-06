@@ -24,13 +24,22 @@ public class JwtUtil {
         this.refreshTokenExpirationTime = refreshTokenExpirationTime;
     }
 
-    public String extractEmail(String token) {
+    public String extractEmailFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
                 .getSubject();
+    }
+
+    public String extractNameFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("name", String.class);
     }
 
     public String generateAccessToken(String email, String name) {

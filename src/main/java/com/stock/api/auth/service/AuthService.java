@@ -1,10 +1,9 @@
-package com.stock.api.service;
+package com.stock.api.auth.service;
 
+import com.stock.api.auth.dto.NaverResponseDto;
 import com.stock.api.security.dto.JwtDto;
-import com.stock.api.dto.NaverResponseDto;
-import com.stock.api.entity.User;
-import com.stock.api.repository.UserRepository;
 import com.stock.api.security.service.JwtService;
+import com.stock.api.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -16,10 +15,11 @@ import org.springframework.web.client.RestClient;
 public class AuthService {
 
     private final RestClient restClient;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final JwtService jwtService;
 
     public JwtDto login(String naverAccessToken) {
+
         // 네이버 사용자 정보를 가져오기 위한 API 호출
         String naverApiUrl = "https://openapi.naver.com/v1/nid/me";
         NaverResponseDto naverResponseDto = fetchNaverUserInfo(naverApiUrl, naverAccessToken);
@@ -27,14 +27,22 @@ public class AuthService {
         String email = naverResponseDto.getResponse().getEmail();
         String name = naverResponseDto.getResponse().getName();
 
-        registerUserIfNotExists(email, name);
+        userService.registerUserIfNotExists(email, name);
 
-        JwtDto jwtDto = jwtService.createJwtDto(email, name);
+        JwtDto jwtDto = jwtService.createJwt(email, name);
+
+        return jwtDto;
+    }
+
+    public JwtDto refresh(String refreshToken) {
+
+        JwtDto jwtDto = jwtService.refreshJwt(refreshToken);
 
         return jwtDto;
     }
 
     private NaverResponseDto fetchNaverUserInfo(String naverApiUrl, String naverAccessToken) {
+
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + naverAccessToken);
 
@@ -44,11 +52,5 @@ public class AuthService {
                     .retrieve()
                     .toEntity(NaverResponseDto.class) // 응답 본문을 NaverResponseDto으로 변환
                     .getBody();
-    }
-
-    private void registerUserIfNotExists(String email, String name) {
-        if (!userRepository.existsByEmail(email)) {
-            userRepository.save(new User(email, name));
-        }
     }
 }

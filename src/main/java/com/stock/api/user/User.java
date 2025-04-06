@@ -1,4 +1,4 @@
-package com.stock.api.entity;
+package com.stock.api.user;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

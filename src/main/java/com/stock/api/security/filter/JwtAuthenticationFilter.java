@@ -9,11 +9,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -23,26 +25,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        if (requestURI.equals("/login") || requestURI.equals("/refresh")) {
+        if (requestURI.equals("/auth/login") || requestURI.equals("/auth/refresh") || requestURI.equals("/auth/logout")) {
             filterChain.doFilter(request, response);
+
             return;
         }
 
         String accessToken = getTokenFromRequest(request);
-        if (accessToken != null) {
-            try {
+        try {
+            Authentication authentication = jwtService.createAuthenticationFromToken(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                Authentication authentication = jwtService.createAuthentication(accessToken);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (ExpiredJwtException e) { // 만료된 액세스 토큰이면
-
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 Unauthorized
-                return; // 필터 체인 종료하고 바로 응답 반환
-            }
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException e) { // 만료된 액세스 토큰이면
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);  // 401 Unauthorized
         }
-
-        filterChain.doFilter(request, response);
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
