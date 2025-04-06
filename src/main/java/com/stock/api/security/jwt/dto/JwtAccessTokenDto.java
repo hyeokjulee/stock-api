@@ -1,13 +1,11 @@
-package com.stock.api.security.dto;
+package com.stock.api.security.jwt.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class JwtDto {
+public class JwtAccessTokenDto {
 
     private String accessToken;
-
-    private String refreshToken;
 }

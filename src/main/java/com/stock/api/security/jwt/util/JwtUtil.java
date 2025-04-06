@@ -1,4 +1,4 @@
-package com.stock.api.security.util;
+package com.stock.api.security.jwt.util;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +47,7 @@ public class JwtUtil {
                 .subject(email)
                 .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime))
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime * 1000))
                 .signWith(secretKey)
                 .compact();
     }
@@ -57,7 +57,7 @@ public class JwtUtil {
                 .subject(email)
                 .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationTime))
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationTime * 1000))
                 .signWith(secretKey)
                 .compact();
     }

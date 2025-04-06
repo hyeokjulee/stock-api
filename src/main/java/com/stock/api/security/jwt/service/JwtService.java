@@ -1,13 +1,13 @@
-package com.stock.api.security.service;
+package com.stock.api.security.jwt.service;
 
-import com.stock.api.security.dto.JwtDto;
-import com.stock.api.security.util.JwtUtil;
+import com.stock.api.exception.RefreshTokenMismatchException;
+import com.stock.api.security.jwt.dto.JwtDto;
+import com.stock.api.security.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
 import java.util.Collections;
 
 @RequiredArgsConstructor
@@ -29,15 +29,20 @@ public class JwtService {
         String accessToken = jwtUtil.generateAccessToken(email, name);
         String refreshToken = jwtUtil.generateRefreshToken(email, name);
 
-        jwtRedisService.saveRefreshToken(email, refreshToken, Duration.ofDays(7));
+        jwtRedisService.saveRefreshToken(email, refreshToken);
 
         return new JwtDto(accessToken, refreshToken);
     }
 
-    public JwtDto refreshJwt(String refreshToken) {
+    public JwtDto refreshJwtFromRefreshToken(String refreshToken) {
 
         String email = jwtUtil.extractEmailFromToken(refreshToken);
         String name = jwtUtil.extractNameFromToken(refreshToken);
+
+        String storedRefreshToken = jwtRedisService.getRefreshToken(email);
+        if (storedRefreshToken == null || !refreshToken.equals(storedRefreshToken)) {
+            throw new RefreshTokenMismatchException();
+        }
 
         JwtDto newJwtDto = createJwt(email, name);
 

@@ -1,11 +1,11 @@
 package com.stock.api.auth.controller;
 
-import com.stock.api.security.dto.JwtAccessTokenDto;
-import com.stock.api.security.dto.JwtDto;
+import com.stock.api.security.jwt.dto.JwtAccessTokenDto;
+import com.stock.api.security.jwt.dto.JwtDto;
 import com.stock.api.auth.dto.NaverAccessTokenDto;
 import com.stock.api.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -13,11 +13,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
+    private final long refreshTokenExpirationTime;
+
+    public AuthController(AuthService authService,
+                          @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpirationTime) {
+        this.authService = authService;
+        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<JwtAccessTokenDto> login(@RequestBody NaverAccessTokenDto naverAccessToken,
@@ -31,9 +37,9 @@ public class AuthController {
                 .httpOnly(false)
                 .secure(false)
                 .sameSite("Strict")
+                .maxAge(refreshTokenExpirationTime)
                 .build();
-
-        response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.setHeader("Set-Cookie", cookie.toString());
 
         return ResponseEntity.ok(new JwtAccessTokenDto(jwtDto.getAccessToken()));
     }
