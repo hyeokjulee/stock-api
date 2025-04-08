@@ -3,7 +3,7 @@ package com.stock.api.auth.dto;
 import lombok.Getter;
 
 @Getter
-public class NaverUserDto {
+public class NaverUserInfoDto {
 
     private String id;
 

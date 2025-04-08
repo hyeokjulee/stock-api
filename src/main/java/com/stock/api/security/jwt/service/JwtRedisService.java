@@ -10,18 +10,18 @@ import java.time.Duration;
 public class JwtRedisService {
 
     private final StringRedisTemplate stringRedisTemplate;
-    private final long refreshTokenExpirationTime;
+    private final long refreshTokenExpiration;
 
     private static final String JWT_REFRESH_PREFIX = "jwt:refresh:";
 
     public JwtRedisService(StringRedisTemplate stringRedisTemplate,
-                           @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpirationTime) {
+                           @Value("${jwt.refresh-token.expiration}") long refreshTokenExpiration) {
         this.stringRedisTemplate = stringRedisTemplate;
-        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
     public void saveRefreshToken(String email, String refreshToken) {
-        stringRedisTemplate.opsForValue().set(JWT_REFRESH_PREFIX + email, refreshToken, Duration.ofSeconds(refreshTokenExpirationTime));
+        stringRedisTemplate.opsForValue().set(JWT_REFRESH_PREFIX + email, refreshToken, Duration.ofSeconds(refreshTokenExpiration));
     }
 
     public String getRefreshToken(String email) {

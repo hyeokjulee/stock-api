@@ -1,6 +1,7 @@
 package com.stock.api.auth.service;
 
-import com.stock.api.auth.dto.NaverResponseDto;
+import com.stock.api.auth.dto.NaverUserResponse;
+import com.stock.api.auth.dto.NaverUserInfoDto;
 import com.stock.api.security.jwt.dto.JwtDto;
 import com.stock.api.security.jwt.service.JwtService;
 import com.stock.api.user.UserService;
@@ -18,14 +19,16 @@ public class AuthService {
     private final UserService userService;
     private final JwtService jwtService;
 
+    private static final String NAVER_API_URL = "https://openapi.naver.com/v1/nid/me";
+
     public JwtDto login(String naverAccessToken) {
 
         // 네이버 사용자 정보를 가져오기 위한 API 호출
-        String naverApiUrl = "https://openapi.naver.com/v1/nid/me";
-        NaverResponseDto naverResponseDto = fetchNaverUserInfo(naverApiUrl, naverAccessToken);
+        NaverUserResponse naverUserResponse = fetchNaverUserInfo(naverAccessToken);
 
-        String email = naverResponseDto.getResponse().getEmail();
-        String name = naverResponseDto.getResponse().getName();
+        NaverUserInfoDto naverUserInfoDto = naverUserResponse.getResponse();
+        String email = naverUserInfoDto.getEmail();
+        String name = naverUserInfoDto.getName();
 
         userService.registerUserIfNotExists(email, name);
 
@@ -36,21 +39,26 @@ public class AuthService {
 
     public JwtDto refresh(String refreshToken) {
 
-        JwtDto jwtDto = jwtService.refreshJwtFromRefreshToken(refreshToken);
+        JwtDto newJwtDto = jwtService.refreshJwtFromRefreshToken(refreshToken);
 
-        return jwtDto;
+        return newJwtDto;
     }
 
-    private NaverResponseDto fetchNaverUserInfo(String naverApiUrl, String naverAccessToken) {
+    public void logout(String refreshToken) {
+
+        jwtService.logoutFromRefreshToken(refreshToken);
+    }
+
+    private NaverUserResponse fetchNaverUserInfo(String naverAccessToken) {
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + naverAccessToken);
 
             return restClient.method(HttpMethod.GET)
-                    .uri(naverApiUrl)
+                    .uri(NAVER_API_URL)
                     .headers(httpHeaders -> httpHeaders.addAll(headers))
                     .retrieve()
-                    .toEntity(NaverResponseDto.class) // 응답 본문을 NaverResponseDto으로 변환
+                    .toEntity(NaverUserResponse.class) // 응답 본문을 NaverResponseDto으로 변환
                     .getBody();
     }
 }

@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class NaverResponseDto {
+public class NaverUserResponse {
 
     private String resultcode;
 
     private String message;
 
-    private NaverUserDto response;
+    private NaverUserInfoDto response;
 }

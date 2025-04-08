@@ -1,11 +1,11 @@
 package com.stock.api.auth.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-public class NaverAccessTokenDto {
+@AllArgsConstructor
+public class JwtResponse {
 
     private String accessToken;
 }

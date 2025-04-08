@@ -17,9 +17,9 @@ public class JwtService {
     private final JwtUtil jwtUtil;
     private final JwtRedisService jwtRedisService;
 
-    public Authentication createAuthenticationFromToken(String accessToken) {
+    public Authentication createAuthenticationFromAccessToken(String accessToken) {
 
-        String email = jwtUtil.extractEmailFromToken(accessToken);
+        String email = jwtUtil.extractEmailFromAccessToken(accessToken);
 
         return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
     }
@@ -36,8 +36,8 @@ public class JwtService {
 
     public JwtDto refreshJwtFromRefreshToken(String refreshToken) {
 
-        String email = jwtUtil.extractEmailFromToken(refreshToken);
-        String name = jwtUtil.extractNameFromToken(refreshToken);
+        String email = jwtUtil.extractEmailFromRefreshToken(refreshToken);
+        String name = jwtUtil.extractNameFromRefreshToken(refreshToken);
 
         String storedRefreshToken = jwtRedisService.getRefreshToken(email);
         if (storedRefreshToken == null || !refreshToken.equals(storedRefreshToken)) {
@@ -47,5 +47,12 @@ public class JwtService {
         JwtDto newJwtDto = createJwt(email, name);
 
         return newJwtDto;
+    }
+
+    public void logoutFromRefreshToken(String refreshToken) {
+
+        String email = jwtUtil.extractEmailFromRefreshToken(refreshToken);
+
+        jwtRedisService.deleteRefreshToken(email);
     }
 }

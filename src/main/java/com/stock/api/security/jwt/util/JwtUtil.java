@@ -12,32 +12,45 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final SecretKey secretKey;
-    private final int accessTokenExpirationTime;
-    private final long refreshTokenExpirationTime;
+    private final SecretKey accessTokenSecretKey;
 
-    public JwtUtil(@Value("${jwt.secret-key}") String secret,
-                   @Value("${jwt.access-token-expiration-time}") int accessTokenExpirationTime,
-                   @Value("${jwt.refresh-token-expiration-time}") long refreshTokenExpirationTime) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-        this.accessTokenExpirationTime = accessTokenExpirationTime;
-        this.refreshTokenExpirationTime = refreshTokenExpirationTime;
+    private final SecretKey refreshTokenSecretKey;
+    private final int accessTokenExpiration;
+    private final long refreshTokenExpiration;
+
+    public JwtUtil(@Value("${jwt.access-token.secret}") String accessTokenSecret,
+                   @Value("${jwt.refresh-token.secret}") String refreshTokenSecret,
+                   @Value("${jwt.access-token.expiration}") int accessTokenExpiration,
+                   @Value("${jwt.refresh-token.expiration}") long refreshTokenExpiration) {
+        this.accessTokenSecretKey = new SecretKeySpec(accessTokenSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        this.refreshTokenSecretKey = new SecretKeySpec(refreshTokenSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
+        this.accessTokenExpiration = accessTokenExpiration;
+        this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String extractEmailFromToken(String token) {
+    public String extractEmailFromAccessToken(String accessToken) {
         return Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(accessTokenSecretKey)
                 .build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(accessToken)
                 .getPayload()
                 .getSubject();
     }
 
-    public String extractNameFromToken(String token) {
+    public String extractEmailFromRefreshToken(String refreshToken) {
         return Jwts.parser()
-                .verifyWith(secretKey)
+                .verifyWith(refreshTokenSecretKey)
                 .build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(refreshToken)
+                .getPayload()
+                .getSubject();
+    }
+
+    public String extractNameFromRefreshToken(String refreshToken) {
+        return Jwts.parser()
+                .verifyWith(refreshTokenSecretKey)
+                .build()
+                .parseSignedClaims(refreshToken)
                 .getPayload()
                 .get("name", String.class);
     }
@@ -47,8 +60,8 @@ public class JwtUtil {
                 .subject(email)
                 .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpirationTime * 1000))
-                .signWith(secretKey)
+                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration * 1000))
+                .signWith(accessTokenSecretKey)
                 .compact();
     }
 
@@ -57,8 +70,8 @@ public class JwtUtil {
                 .subject(email)
                 .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpirationTime * 1000))
-                .signWith(secretKey)
+                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration * 1000))
+                .signWith(refreshTokenSecretKey)
                 .compact();
     }
 }
