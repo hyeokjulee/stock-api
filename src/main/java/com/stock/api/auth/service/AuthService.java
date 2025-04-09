@@ -2,8 +2,7 @@ package com.stock.api.auth.service;
 
 import com.stock.api.auth.dto.NaverUserResponse;
 import com.stock.api.auth.dto.NaverUserInfoDto;
-import com.stock.api.security.jwt.dto.JwtDto;
-import com.stock.api.security.jwt.service.JwtService;
+import com.stock.api.auth.dto.JwtDto;
 import com.stock.api.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -39,9 +38,7 @@ public class AuthService {
 
     public JwtDto refresh(String refreshToken) {
 
-        JwtDto newJwtDto = jwtService.refreshJwtFromRefreshToken(refreshToken);
-
-        return newJwtDto;
+        return jwtService.refreshJwtFromRefreshToken(refreshToken);
     }
 
     public void logout(String refreshToken) {

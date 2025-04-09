@@ -1,11 +1,15 @@
-package com.stock.api.security.jwt.service;
+package com.stock.api.auth.service;
 
+import com.stock.api.exception.RefreshTokenExpiredException;
 import com.stock.api.exception.RefreshTokenMismatchException;
-import com.stock.api.security.jwt.dto.JwtDto;
-import com.stock.api.security.jwt.util.JwtUtil;
+import com.stock.api.auth.dto.JwtDto;
+import com.stock.api.auth.util.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -36,17 +40,22 @@ public class JwtService {
 
     public JwtDto refreshJwtFromRefreshToken(String refreshToken) {
 
-        String email = jwtUtil.extractEmailFromRefreshToken(refreshToken);
-        String name = jwtUtil.extractNameFromRefreshToken(refreshToken);
+        String email;
+        String name;
+
+        try {
+            email = jwtUtil.extractEmailFromRefreshToken(refreshToken);
+            name = jwtUtil.extractNameFromRefreshToken(refreshToken);
+        } catch (ExpiredJwtException e) {
+            throw new RefreshTokenExpiredException();
+        }
 
         String storedRefreshToken = jwtRedisService.getRefreshToken(email);
         if (storedRefreshToken == null || !refreshToken.equals(storedRefreshToken)) {
             throw new RefreshTokenMismatchException();
         }
 
-        JwtDto newJwtDto = createJwt(email, name);
-
-        return newJwtDto;
+        return createJwt(email, name);
     }
 
     public void logoutFromRefreshToken(String refreshToken) {

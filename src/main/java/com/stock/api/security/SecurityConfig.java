@@ -1,6 +1,5 @@
-package com.stock.api.security.config;
+package com.stock.api.security;
 
-import com.stock.api.security.jwt.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

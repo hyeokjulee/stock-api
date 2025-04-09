@@ -1,6 +1,6 @@
-package com.stock.api.security.jwt.filter;
+package com.stock.api.security;
 
-import com.stock.api.security.jwt.service.JwtService;
+import com.stock.api.auth.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

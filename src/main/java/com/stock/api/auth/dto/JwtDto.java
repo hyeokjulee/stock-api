@@ -1,4 +1,4 @@
-package com.stock.api.security.jwt.dto;
+package com.stock.api.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

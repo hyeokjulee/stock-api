@@ -1,7 +1,7 @@
 package com.stock.api.exception;
 
-public class RefreshTokenMismatchException extends RuntimeException {
+public class RefreshTokenMismatchException extends RefreshTokenException {
     public RefreshTokenMismatchException() {
-        super("리프레시 토큰 불일치 또는 만료");
+        super("Refresh Token이 일치하지 않습니다.");
     }
 }

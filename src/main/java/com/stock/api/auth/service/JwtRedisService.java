@@ -1,4 +1,4 @@
-package com.stock.api.security.jwt.service;
+package com.stock.api.auth.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
