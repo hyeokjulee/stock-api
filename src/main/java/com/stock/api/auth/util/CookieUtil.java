@@ -29,7 +29,6 @@ public class CookieUtil {
                 .secure(cookieSecure)
                 .sameSite(cookieSameSite)
                 .maxAge(0)
-                .path("/")
                 .build();
         response.setHeader("Set-Cookie", cookie.toString());
     }
@@ -40,7 +39,6 @@ public class CookieUtil {
                 .secure(cookieSecure)
                 .sameSite(cookieSameSite)
                 .maxAge(refreshTokenExpiration)
-                .path("/")
                 .build();
         response.setHeader("Set-Cookie", cookie.toString());
     }

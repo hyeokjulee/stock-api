@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# mkcert 인증서
+localhost.p12
