@@ -38,3 +38,6 @@ out/
 
 # mkcert 인증서
 localhost.p12
+
+# 민감한 정보
+application-secret.properties

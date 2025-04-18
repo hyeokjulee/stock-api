@@ -44,7 +44,7 @@ public class SecurityConfig {
 
         // 접근 권한 설정
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/*", "/error").permitAll()
+                .requestMatchers("/auth/*", "/error", "/stocks/*").permitAll()
                 .anyRequest().authenticated());
         
         // JWT 검증 필터 추가

@@ -55,7 +55,7 @@ public class AuthService {
                     .uri(NAVER_API_URL)
                     .headers(httpHeaders -> httpHeaders.addAll(headers))
                     .retrieve()
-                    .toEntity(NaverUserResponse.class) // 응답 본문을 NaverResponseDto으로 변환
+                    .toEntity(NaverUserResponse.class) // 응답 본문을 NaverUserResponse로 변환
                     .getBody();
     }
 }
