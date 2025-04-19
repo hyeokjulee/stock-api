@@ -10,15 +10,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class KisService {
 
     private final KisApiClient kisApiClient;
+    private final KisTokenManager kisTokenManager;
 
-    public List<StockDto> getMarketCapRanking(String excd) {
+    public List<StockDto> getMarketCapRanking(String exchangeCode) {
 
-        KisStocksResponse response = kisApiClient.fetchMarketCapRanking(excd);
+        String accessToken = kisTokenManager.getAccessToken();
+
+        KisStocksResponse response = kisApiClient.fetchMarketCapRanking(exchangeCode, accessToken);
 
         return response
                 .getOutput2()

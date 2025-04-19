@@ -1,6 +1,13 @@
 package com.stock.api.kis.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
 public class KisTokenResponse {
 
-    private String access_token;
+    @JsonProperty("access_token")
+    private String accessToken;
 }

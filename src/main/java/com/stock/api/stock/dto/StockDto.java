@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class StockDto {
 
-    private String exchange; // 거래소코드
+    private String exchangeCode; // 거래소코드
 
     private String symbol; // 종목코드
 
