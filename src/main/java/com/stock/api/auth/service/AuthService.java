@@ -3,6 +3,7 @@ package com.stock.api.auth.service;
 import com.stock.api.auth.dto.NaverUserResponse;
 import com.stock.api.auth.dto.NaverUserInfoDto;
 import com.stock.api.auth.dto.JwtDto;
+import com.stock.api.user.User;
 import com.stock.api.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -29,9 +30,9 @@ public class AuthService {
         String email = naverUserInfoDto.getEmail();
         String name = naverUserInfoDto.getName();
 
-        userService.registerUserIfNotExists(email, name);
+        User user = userService.registerUserIfNotExists(email, name);
 
-        JwtDto jwtDto = jwtService.createJwt(email, name);
+        JwtDto jwtDto = jwtService.createJwt(user.getId(), email, name);
 
         return jwtDto;
     }

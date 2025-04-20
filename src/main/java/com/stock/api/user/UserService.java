@@ -11,10 +11,14 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public void registerUserIfNotExists(String email, String name) {
+    public User registerUserIfNotExists(String email, String name) {
 
-        if (!userRepository.existsByEmail(email)) {
-            userRepository.save(new User(email, name));
+        User user = userRepository.findByEmail(email);
+
+        if (user == null) {
+            user = userRepository.save(new User(email, name));
         }
+
+        return user;
     }
 }

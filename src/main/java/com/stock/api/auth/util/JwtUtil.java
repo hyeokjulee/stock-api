@@ -1,5 +1,6 @@
 package com.stock.api.auth.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,50 +29,52 @@ public class JwtUtil {
         this.refreshTokenExpiration = refreshTokenExpiration;
     }
 
-    public String extractEmailFromAccessToken(String accessToken) {
-        return Jwts.parser()
-                .verifyWith(accessTokenSecretKey)
-                .build()
-                .parseSignedClaims(accessToken)
-                .getPayload()
-                .getSubject();
+    public Long extractIdFromAccessToken(String accessToken) {
+
+        return Long.parseLong(parseClaims(accessTokenSecretKey, accessToken).getSubject());
+    }
+
+    public Long extractIdFromRefreshToken(String refreshToken) {
+
+        return Long.parseLong(parseClaims(refreshTokenSecretKey, refreshToken).getSubject());
     }
 
     public String extractEmailFromRefreshToken(String refreshToken) {
-        return Jwts.parser()
-                .verifyWith(refreshTokenSecretKey)
-                .build()
-                .parseSignedClaims(refreshToken)
-                .getPayload()
-                .getSubject();
+
+        return parseClaims(refreshTokenSecretKey, refreshToken).get("email", String.class);
     }
 
     public String extractNameFromRefreshToken(String refreshToken) {
+
+        return parseClaims(refreshTokenSecretKey, refreshToken).get("name", String.class);
+    }
+
+    public String generateAccessToken(Long id, String email, String name) {
+
+        return generateToken(id, email, name, accessTokenExpiration, accessTokenSecretKey);
+    }
+
+    public String generateRefreshToken(Long id, String email, String name) {
+
+        return generateToken(id, email, name, refreshTokenExpiration, refreshTokenSecretKey);
+    }
+
+    private Claims parseClaims(SecretKey secretKey, String token) {
         return Jwts.parser()
-                .verifyWith(refreshTokenSecretKey)
+                .verifyWith(secretKey)
                 .build()
-                .parseSignedClaims(refreshToken)
-                .getPayload()
-                .get("name", String.class);
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public String generateAccessToken(String email, String name) {
+    private String generateToken(Long id, String email, String name, long expiration, SecretKey secretKey) {
         return Jwts.builder()
-                .subject(email)
+                .subject(id.toString())
+                .claim("email", email)
                 .claim("name", name)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration * 1000))
-                .signWith(accessTokenSecretKey)
-                .compact();
-    }
-
-    public String generateRefreshToken(String email, String name) {
-        return Jwts.builder()
-                .subject(email)
-                .claim("name", name)
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + refreshTokenExpiration * 1000))
-                .signWith(refreshTokenSecretKey)
+                .expiration(new Date(System.currentTimeMillis() + expiration * 1000))
+                .signWith(secretKey)
                 .compact();
     }
 }

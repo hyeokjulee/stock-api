@@ -23,15 +23,15 @@ public class JwtService {
 
     public Authentication createAuthenticationFromAccessToken(String accessToken) {
 
-        String email = jwtUtil.extractEmailFromAccessToken(accessToken);
+        Long id = jwtUtil.extractIdFromAccessToken(accessToken);
 
-        return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+        return new UsernamePasswordAuthenticationToken(id, null, Collections.emptyList());
     }
 
-    public JwtDto createJwt(String email, String name) {
+    public JwtDto createJwt(Long id, String email, String name) {
 
-        String accessToken = jwtUtil.generateAccessToken(email, name);
-        String refreshToken = jwtUtil.generateRefreshToken(email, name);
+        String accessToken = jwtUtil.generateAccessToken(id, email, name);
+        String refreshToken = jwtUtil.generateRefreshToken(id, email, name);
 
         jwtRedisService.saveRefreshToken(email, refreshToken);
 
@@ -40,10 +40,12 @@ public class JwtService {
 
     public JwtDto refreshJwtFromRefreshToken(String refreshToken) {
 
+        Long id;
         String email;
         String name;
 
         try {
+            id = jwtUtil.extractIdFromRefreshToken(refreshToken);
             email = jwtUtil.extractEmailFromRefreshToken(refreshToken);
             name = jwtUtil.extractNameFromRefreshToken(refreshToken);
         } catch (ExpiredJwtException e) {
@@ -55,7 +57,7 @@ public class JwtService {
             throw new RefreshTokenMismatchException();
         }
 
-        return createJwt(email, name);
+        return createJwt(id, email, name);
     }
 
     public void logoutFromRefreshToken(String refreshToken) {
