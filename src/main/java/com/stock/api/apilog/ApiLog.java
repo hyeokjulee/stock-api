@@ -1,4 +1,4 @@
-package com.stock.api.log.apilog;
+package com.stock.api.apilog;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

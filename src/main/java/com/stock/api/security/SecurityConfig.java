@@ -42,6 +42,9 @@ public class SecurityConfig {
         // http basic 인증 방식 비활성화
         http.httpBasic(auth -> auth.disable());
 
+        // 인증되지 않은 사용자의 AnonymousAuthenticationToken 비활성화
+        http.anonymous(auth -> auth.disable());
+
         // 접근 권한 설정
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/*", "/error", "/stocks/*").permitAll()

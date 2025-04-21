@@ -3,6 +3,7 @@ package com.stock.api.kis.client;
 import com.stock.api.kis.dto.KisStocksResponse;
 import com.stock.api.kis.dto.KisTokenRequest;
 import com.stock.api.kis.dto.KisTokenResponse;
+import com.stock.api.apilog.ApiLogging;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -29,6 +30,7 @@ public class KisApiClient {
         this.kisTokenRequest = new KisTokenRequest("client_credentials", appKey, appSecret);
     }
 
+    @ApiLogging
     public KisStocksResponse fetchMarketCapRanking(String exchangeCode, String accessToken) {
 
         HttpHeaders headers = new HttpHeaders();
