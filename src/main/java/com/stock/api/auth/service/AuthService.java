@@ -3,6 +3,7 @@ package com.stock.api.auth.service;
 import com.stock.api.auth.dto.NaverUserResponse;
 import com.stock.api.auth.dto.NaverUserInfoDto;
 import com.stock.api.auth.dto.JwtDto;
+import com.stock.api.loginlog.LoginLogService;
 import com.stock.api.user.User;
 import com.stock.api.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +19,12 @@ public class AuthService {
     private final RestClient restClient;
     private final UserService userService;
     private final JwtService jwtService;
+    private final LoginLogService loginLogService;
 
     private static final String NAVER_API_URL = "https://openapi.naver.com/v1/nid/me";
 
     public JwtDto login(String naverAccessToken) {
 
-        // 네이버 사용자 정보를 가져오기 위한 API 호출
         NaverUserResponse naverUserResponse = fetchNaverUserInfo(naverAccessToken);
 
         NaverUserInfoDto naverUserInfoDto = naverUserResponse.getResponse();
@@ -32,7 +33,11 @@ public class AuthService {
 
         User user = userService.registerUserIfNotExists(email, name);
 
-        JwtDto jwtDto = jwtService.createJwt(user.getId(), email, name);
+        Long id = user.getId();
+
+        JwtDto jwtDto = jwtService.createJwt(id, email, name);
+
+        loginLogService.saveLoginLog(id);
 
         return jwtDto;
     }
