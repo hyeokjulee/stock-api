@@ -23,7 +23,7 @@ public class User {
     private String email;
 
     @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public User(String email, String name) {

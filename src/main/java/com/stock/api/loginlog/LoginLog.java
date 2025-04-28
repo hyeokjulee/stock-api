@@ -19,7 +19,7 @@ public class LoginLog {
     private Long userId;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public LoginLog(Long userId) {

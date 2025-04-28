@@ -27,7 +27,7 @@ public class ApiLog {
     private Integer responseTimeMs;
 
     @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public ApiLog(Long userId, String method, String url, Integer responseTimeMs) {
