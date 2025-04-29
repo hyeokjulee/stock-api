@@ -52,12 +52,4 @@ public class StockAlert {
         this.targetPrice = targetPrice;
         this.alertDirection = alertDirection;
     }
-
-    public enum ExchangeCode {
-        NAS, NYS
-    }
-
-    public enum AlertDirection {
-        UP, DOWN
-    }
 }

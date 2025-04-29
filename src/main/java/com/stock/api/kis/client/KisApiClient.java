@@ -1,9 +1,11 @@
 package com.stock.api.kis.client;
 
+import com.stock.api.kis.dto.KisPriceResponse;
 import com.stock.api.kis.dto.KisStocksResponse;
 import com.stock.api.kis.dto.KisTokenRequest;
 import com.stock.api.kis.dto.KisTokenResponse;
 import com.stock.api.apilog.ApiLogging;
+import com.stock.api.stockalert.ExchangeCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,6 +30,28 @@ public class KisApiClient {
         this.appKey = appKey;
         this.appSecret = appSecret;
         this.kisTokenRequest = new KisTokenRequest("client_credentials", appKey, appSecret);
+    }
+
+    public KisPriceResponse fetchCurrentPrice(String tickerSymbol, String exchangeCode, String accessToken) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("authorization", "Bearer " + accessToken); // 접근토큰
+        headers.set("appkey", appKey); // 앱키
+        headers.set("appsecret", appSecret); // 앱시크릿키
+        headers.set("tr_id", "HHDFS00000300"); // 거래ID
+
+        String uri = UriComponentsBuilder.fromHttpUrl(DOMAIN + "/uapi/overseas-price/v1/quotations/price")
+                .queryParam("AUTH", "") // 사용자권한정보
+                .queryParam("EXCD", exchangeCode) // 거래소코드
+                .queryParam("SYMB", tickerSymbol) // 종목코드
+                .toUriString();
+
+        return restClient.method(HttpMethod.GET)
+                .uri(uri)
+                .headers(httpHeaders -> httpHeaders.addAll(headers))
+                .retrieve()
+                .toEntity(KisPriceResponse.class) // 응답 본문을 KisPriceResponse로 변환
+                .getBody();
     }
 
     @ApiLogging

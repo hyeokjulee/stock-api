@@ -1,6 +1,7 @@
 package com.stock.api.kis.service;
 
 import com.stock.api.kis.client.KisApiClient;
+import com.stock.api.kis.dto.KisPriceResponse;
 import com.stock.api.kis.dto.KisStockDto;
 import com.stock.api.kis.dto.KisStocksResponse;
 import com.stock.api.stock.dto.StockDto;
@@ -16,6 +17,15 @@ public class KisService {
 
     private final KisApiClient kisApiClient;
     private final KisTokenManager kisTokenManager;
+
+    public double getCurrentPrice(String tickerSymbol, String exchangeCode) {
+
+        String accessToken = kisTokenManager.getAccessToken();
+
+        KisPriceResponse response = kisApiClient.fetchCurrentPrice(tickerSymbol, exchangeCode, accessToken);
+
+        return response.getOutput().getLast();
+    }
 
     public List<StockDto> getMarketCapRanking(String exchangeCode) {
 
