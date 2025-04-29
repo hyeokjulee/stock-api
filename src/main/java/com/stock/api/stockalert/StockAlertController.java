@@ -1,5 +1,6 @@
 package com.stock.api.stockalert;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,7 +17,7 @@ public class StockAlertController {
     private final StockAlertService stockAlertService;
 
     @PostMapping("/create")
-    public ResponseEntity<Void> createStockAlert(@RequestBody StockAlertRequest stockAlertRequest,
+    public ResponseEntity<Void> createStockAlert(@Valid @RequestBody StockAlertRequest stockAlertRequest,
                                                    @AuthenticationPrincipal Long userId) {
 
         stockAlertService.createStockAlert(stockAlertRequest, userId);
