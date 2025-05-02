@@ -1,5 +1,6 @@
 package com.stock.api.stockalert;
 
+import com.stock.api.exception.InvalidStockInputException;
 import com.stock.api.kis.service.KisService;
 import com.stock.api.user.User;
 import com.stock.api.user.UserRepository;
@@ -21,6 +22,11 @@ public class StockAlertService {
         double targetPrice = stockAlertRequest.getTargetPrice();
 
         double currentPrice = kisService.getCurrentPrice(tickerSymbol, exchangeCode.name());
+
+        if (currentPrice == 0.0) {
+            throw new InvalidStockInputException();
+        }
+
         AlertDirection alertDirection = targetPrice > currentPrice ? AlertDirection.UP : AlertDirection.DOWN;
 
         User user = userRepository.findById(userId).get();

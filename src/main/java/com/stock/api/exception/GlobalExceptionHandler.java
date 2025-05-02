@@ -22,4 +22,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(ex.getMessage()));
     }
+
+    @ExceptionHandler(InvalidStockInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidStockInputException(InvalidStockInputException ex) {
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(ex.getMessage()));
+    }
 }
