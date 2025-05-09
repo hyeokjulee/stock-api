@@ -2,6 +2,7 @@ package com.stock.api.stockalert;
 
 import com.stock.api.user.User;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
+@Getter
 @Table(name = "stock_alerts")
 public class StockAlert {
 
@@ -41,15 +43,11 @@ public class StockAlert {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public StockAlert(User user,
-                      String tickerSymbol,
-                      ExchangeCode exchangeCode,
-                      double targetPrice,
-                      AlertDirection alertDirection) {
+    public StockAlert(User user, String tickerSymbol, ExchangeCode exchangeCode, double targetPrice, double currentPrice) {
         this.user = user;
         this.tickerSymbol = tickerSymbol;
         this.exchangeCode = exchangeCode;
         this.targetPrice = targetPrice;
-        this.alertDirection = alertDirection;
+        this.alertDirection = targetPrice > currentPrice ? AlertDirection.UP : AlertDirection.DOWN;
     }
 }
