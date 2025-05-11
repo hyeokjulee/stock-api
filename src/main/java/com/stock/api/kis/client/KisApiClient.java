@@ -5,14 +5,17 @@ import com.stock.api.kis.dto.KisStocksResponse;
 import com.stock.api.kis.dto.KisTokenRequest;
 import com.stock.api.kis.dto.KisTokenResponse;
 import com.stock.api.apilog.ApiLogging;
-import com.stock.api.stockalert.ExchangeCode;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+@Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1500))
 @Component
 public class KisApiClient {
 
