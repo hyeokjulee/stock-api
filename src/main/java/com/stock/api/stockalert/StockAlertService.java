@@ -18,6 +18,7 @@ public class StockAlertService {
     private final StockAlertRepository stockAlertRepository;
     private final UserRepository userRepository;
     private final KisService kisService;
+    private final StockAlertRedisService stockAlertRedisService;
 
     @Transactional
     public void createStockAlert(StockAlertRequest stockAlertRequest, Long userId) {
@@ -43,8 +44,17 @@ public class StockAlertService {
 
         return alerts.stream()
                 .map(alert -> StockAlertResponse.from(
-                        alert, kisService.getCurrentPrice(alert.getTickerSymbol(), alert.getExchangeCode().name())
+                        alert, getCachedOrFetchCurrentPrice(alert.getTickerSymbol(), alert.getExchangeCode().name())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private double getCachedOrFetchCurrentPrice(String ticker, String exchangeCode) {
+        Double cached = stockAlertRedisService.getCurrentPrice(ticker, exchangeCode);
+        if (cached != null) return cached;
+
+        double price = kisService.getCurrentPrice(ticker, exchangeCode);
+        stockAlertRedisService.saveCurrentPrice(ticker, exchangeCode, price);
+        return price;
     }
 }
