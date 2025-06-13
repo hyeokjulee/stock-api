@@ -35,6 +35,7 @@ public class KisApiClient {
         this.kisTokenRequest = new KisTokenRequest("client_credentials", appKey, appSecret);
     }
 
+    @ApiLogging
     public KisPriceResponse fetchCurrentPrice(String tickerSymbol, String exchangeCode, String accessToken) {
 
         HttpHeaders headers = new HttpHeaders();

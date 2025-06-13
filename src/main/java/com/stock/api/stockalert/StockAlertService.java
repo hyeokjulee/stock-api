@@ -38,7 +38,7 @@ public class StockAlertService {
         stockAlertRepository.save(stockAlert);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<StockAlertResponse> getStockAlerts(Long userId) {
         List<StockAlert> alerts = stockAlertRepository.findByUserId(userId);
 
