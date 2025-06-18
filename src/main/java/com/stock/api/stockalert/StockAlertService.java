@@ -20,6 +20,14 @@ public class StockAlertService {
     private final KisService kisService;
     private final StockAlertRedisService stockAlertRedisService;
 
+    public void safelyDeleteStockAlert(Long id, Long userId) {
+        stockAlertRepository.findById(id).ifPresent(stockAlert -> { // 동시성 문제 방지
+            if (stockAlert.getUser().getId().equals(userId)) { // 악의적 접근 방어
+                stockAlertRepository.delete(stockAlert);
+            }
+        });
+    }
+
     @Transactional
     public void createStockAlert(StockAlertRequest stockAlertRequest, Long userId) {
 

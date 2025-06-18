@@ -16,6 +16,15 @@ public class StockAlertController {
 
     private final StockAlertService stockAlertService;
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStockAlert(@PathVariable Long id,
+                                                 @AuthenticationPrincipal Long userId) {
+
+        stockAlertService.safelyDeleteStockAlert(id, userId);
+
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
     @PostMapping
     public ResponseEntity<Void> createStockAlert(@Valid @RequestBody StockAlertRequest stockAlertRequest,
                                                    @AuthenticationPrincipal Long userId) {
