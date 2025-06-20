@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: stock-api
+  config:
+    import: classpath:/application-secret.yml # 민감한 정보
+
+cors:
+  allowed-origin: https://localhost:3000 # 허용할 출처 (개발용)
+
+cookie: # 쿠키 설정 (개발용)
+  http-only: false
+  secure: true
+  same-site: None
+
+server: # HTTPS 설정 (개발용)
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: classpath:localhost.p12
+    key-store-password: 123456
+    key-store-type: PKCS12

@@ -40,4 +40,4 @@ out/
 localhost.p12
 
 # 민감한 정보
-application-secret.properties
+application-secret.yml
