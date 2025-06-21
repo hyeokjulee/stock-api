@@ -17,7 +17,7 @@ public class ApiLog {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(nullable = false, length = 7)
+    @Column(nullable = false, length = 10)
     private String method;
 
     @Column(nullable = false, length = 127)
