@@ -37,15 +37,17 @@ public class ApiLogAspect {
         Long userId = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null) {
-
             userId = (Long) authentication.getPrincipal();
         }
 
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
-
-        String method = request.getMethod();
-        String url = request.getRequestURL().toString();
+        String method = "INTERNAL";
+        String url = "Scheduler";
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            HttpServletRequest request = attributes.getRequest();
+            method = request.getMethod();
+            url = request.getRequestURL().toString();
+        }
 
         return new ApiLog(userId, method, url, responseTime);
     }

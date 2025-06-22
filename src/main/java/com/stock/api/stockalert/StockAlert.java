@@ -50,4 +50,8 @@ public class StockAlert {
         this.targetPrice = targetPrice;
         this.alertDirection = targetPrice > currentPrice ? AlertDirection.UP : AlertDirection.DOWN;
     }
+
+    public void markAlertSent() {
+        this.alertSentAt = LocalDateTime.now();
+    }
 }
