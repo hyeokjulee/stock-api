@@ -1,6 +1,8 @@
 package com.stock.api.stockalert;
 
 import com.stock.api.email.EmailService;
+import com.stock.api.emaillog.EmailLog;
+import com.stock.api.emaillog.EmailLogService;
 import com.stock.api.exception.InvalidStockInputException;
 import com.stock.api.kis.service.KisService;
 import com.stock.api.user.User;
@@ -21,6 +23,7 @@ public class StockAlertService {
     private final KisService kisService;
     private final StockAlertRedisService stockAlertRedisService;
     private final EmailService emailService;
+    private final EmailLogService emailLogService;
 
     public void safelyDeleteStockAlert(Long id, Long userId) {
         stockAlertRepository.findById(id).ifPresent(stockAlert -> { // 동시성 문제 방지
@@ -73,9 +76,30 @@ public class StockAlertService {
         String subject = String.format("[주가 알림] %s (%s) 목표 도달!", alert.getTickerSymbol(), alert.getExchangeCode().name());
         String content = String.format("현재 주가: %.2f\n목표 주가: %.2f", currentPrice, alert.getTargetPrice());
 
-        emailService.send(email, subject, content);
-        alert.markAlertSent();
-        stockAlertRepository.save(alert);
+        boolean success = false;
+        String errorMessage = null;
+
+        try {
+            emailService.send(email, subject, content);
+            success = true;
+        } catch (Exception e) {
+            errorMessage = e.getMessage();
+        }
+
+        EmailLog log = new EmailLog(
+                alert.getId(),
+                alert.getUser().getId(),
+                subject,
+                content,
+                success,
+                errorMessage
+        );
+        emailLogService.saveEmailLog(log);
+
+        if (success) {
+            alert.markAlertSent();
+            stockAlertRepository.save(alert);
+        }
     }
 
     public List<StockAlert> getUnsentAlertsWithUser() {
